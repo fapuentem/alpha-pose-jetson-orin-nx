@@ -1,0 +1,46 @@
+#+TITLE: Step by Step AlphaPose Installation Guide in Jetson Orin NX
+#+AUTHOR: Fabricio
+#+DATE: <2024-08-06 ter>
+
+* The requirements of installation of AlphaPose are detailled [[https://github.com/MVIG-SJTU/AlphaPose/blob/master/docs/INSTALL.md][here]].
++ Nvidia device with CUDA, example for Ubuntu 20.04 (if you have no
+  nvidia device, delete this line from setup.py
++ Python 3.7+
++ Cython
++ PyTorch 1.11+, for users who want to use 1.5 < PyTorch < 1.11,
+  please switch to the pytorch<1.11 branch by: git checkout
+  "pytorch<1.11"; for users who want to use PyTorch < 1.5, please
+  switch to the pytorch<1.5 branch by: git checkout "pytorch<1.5"
++ torchvision 0.12.0+
++ numpy
++ python-package setuptools >= 40.0, reported by this issue
++ Linux
+However, all these requierements assume that the developer is using a
+x86-64 computer. Special considerations should be taken with the
+/NVIDIA device/ because we use an Jetson NVIDIA Orin NX JetPack
+6.0. Also, *PyTorch* and *torchvison* requiere more attention.
+* Install CUDA and cuDNN
+The first option is to install it using the JetPack SDK, but for some weird reason it is not installed in our Jetson Orin Nx.
+1. Install NVIDIA JetPAck
+   #+BEGIN_SRC bash
+sudo apt install nvidia-jetpack -y
+   #+END_SRC
+2. Verify CUDA Installation
+   #+BEGIN_SRC bash
+nvcc --version
+   #+END_SRC
+3. Add [[https://developer.nvidia.com/cusparselt-downloads?target_os=Linux&target_arch=aarch64-jetson][cuSPARSELt]]
+   Check if the libcusparseLt.so.0 file exists in the CUDA library path:
+   #+BEGIN_SRC
+ls /usr/local/cuda-12.2/lib64/libcusparseLt.so.0
+   #+END_SRC
+* Installing PyTorch for Jetson Platforms
+1. Install the [[https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html][prerequisites]].
+2. Export with the following command:
+   #+BEGIN_SRC bash
+export  TORCH_INSTALL=https://developer.download.nvidia.cn/compute/redist/jp/v60/pytorch/torch-2.4.0a0+3bcc3cddb5.nv24.07.16234504-cp310-cp310-linux_aarch64.whl
+   #+END_SRC
+3. Install PyTorch
+   #+BEGIN_SRC bash
+python3 -m pip install --upgrade pip; python3 -m pip install numpy==’1.26.1’; python3 -m pip install --no-cache $TORCH_INSTALL
+   #+END_SRC
