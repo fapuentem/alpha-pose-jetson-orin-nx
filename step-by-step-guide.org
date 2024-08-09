@@ -30,17 +30,71 @@ sudo apt install nvidia-jetpack -y
 nvcc --version
    #+END_SRC
 3. Add [[https://developer.nvidia.com/cusparselt-downloads?target_os=Linux&target_arch=aarch64-jetson][cuSPARSELt]]
-   Check if the libcusparseLt.so.0 file exists in the CUDA library path:
-   #+BEGIN_SRC
-ls /usr/local/cuda-12.2/lib64/libcusparseLt.so.0
+   #+BEGIN_SRC bash
+     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/cuda-keyring_1.1-1_all.deb
+     sudo dpkg -i cuda-keyring_1.1-1_all.deb
+     sudo apt-get update
+     sudo apt-get -y install libcusparselt0 libcusparselt-dev
    #+END_SRC
+   Check if the libcusparseLt.so.0 file exists in the CUDA library path:
+   #+BEGIN_SRC bash
+     ls /usr/local/cuda-12.2/lib64/libcusparseLt.so.0
+   #+END_SRC
+
 * Installing PyTorch for Jetson Platforms
-1. Install the [[https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html][prerequisites]].
+1. Install the [[https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html][prerequisites]]
 2. Export with the following command:
    #+BEGIN_SRC bash
-export  TORCH_INSTALL=https://developer.download.nvidia.cn/compute/redist/jp/v60/pytorch/torch-2.4.0a0+3bcc3cddb5.nv24.07.16234504-cp310-cp310-linux_aarch64.whl
+     export  TORCH_INSTALL=https://developer.download.nvidia.cn/compute/redist/jp/v60/pytorch/torch-2.4.0a0+3bcc3cddb5.nv24.07.16234504-cp310-cp310-linux_aarch64.whl
    #+END_SRC
 3. Install PyTorch
    #+BEGIN_SRC bash
-python3 -m pip install --upgrade pip; python3 -m pip install numpy==’1.26.1’; python3 -m pip install --no-cache $TORCH_INSTALL
+     sudo python3 -m pip install --upgrade pip;
+     sudo python3 -m pip install numpy=='1.26.1';
+     sudo python3 -m pip install --no-cache $TORCH_INSTALL
    #+END_SRC
+4. Verify the installation
+   #+BEGIN_SRC bash
+     python3 -c "import torch; print(torch.__version__)"
+   #+END_SRC
+
+* Install Torchvision
+[[https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048][Here]] is available a manual for PyTorch and Torchvision in a Jetson Orin. However, we follow the steps bellow:
+#+BEGIN_SRC bash
+  #Installing torchvision
+  #For latest torchvision refer original Nvidia Jetson Nano thread - https://devtalk.nvidia.com/default/topic/1049071/jetson-nano/pytorch-for-jetson-nano/.
+  sudo apt-get install libjpeg-dev zlib1g-dev
+  git clone --branch v0.18.0 https://github.com/pytorch/vision torchvision   # see below for version of torchvision to download
+  export BUILD_VERSION=0.18.0  # or the version you're compiling
+  # python3 setup.py install --user
+  cd torchvision
+  sudo pip3 install .
+  cd ../  # attempting to load torchvision from build dir will result in import error
+  python3 -c "import torchvision; print(torchvision.__version__)"
+#+END_SRC
+NOTE: Check version compatibility version of Pytorch and Torchvision in [[https://github.com/pytorch/vision][GitHub repo]].
+
+* Install AlphaPose
+1. Compile and install [[https://github.com/HaoyiZhu/HalpeCOCOAPI.git][HalpoCOCOAPI]]
+#+BEGIN_SRC bash
+   git clone https://github.com/HaoyiZhu/HalpeCOCOAPI.git
+   cd HalpoCOCOAPI/PythonAPI
+   sudo python3 setup.py build_ext --inplace
+   sudo python3 setup.py install
+#+END_SRC
+2. Alphapose
+  ,#+BEGIN_SRC patch
+  diff --git a/setup.py b/setup.py
+  index 25d14cd..acc981b 100644
+  --- a/setup.py
+  +++ b/setup.py
+  @@ -72,7 +72,7 @@ __version__ = '{}'
+   short_version = '{}'
+   """
+       sha = get_hash()
+  -    VERSION = SHORT_VERSION + '+' + sha
+  +    VERSION = SHORT_VERSION + sha # + '+' + sha
+
+       with open(version_file, 'w') as f:
+           f.write(content.format(time.asctime(), VERSION, SHORT_VERSION))
+#+END_SRC
