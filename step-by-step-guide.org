@@ -23,11 +23,11 @@ x86-64 computer. Special considerations should be taken with the
 The first option is to install it using the JetPack SDK, but for some weird reason it is not installed in our Jetson Orin Nx.
 1. Install NVIDIA JetPAck
    #+BEGIN_SRC bash
-sudo apt install nvidia-jetpack -y
+     sudo apt install nvidia-jetpack -y
    #+END_SRC
 2. Verify CUDA Installation
    #+BEGIN_SRC bash
-nvcc --version
+     nvcc --version
    #+END_SRC
 3. Add [[https://developer.nvidia.com/cusparselt-downloads?target_os=Linux&target_arch=aarch64-jetson][cuSPARSELt]]
    #+BEGIN_SRC bash
@@ -36,6 +36,7 @@ nvcc --version
      sudo apt-get update
      sudo apt-get -y install libcusparselt0 libcusparselt-dev
    #+END_SRC
+
    Check if the libcusparseLt.so.0 file exists in the CUDA library path:
    #+BEGIN_SRC bash
      ls /usr/local/cuda-12.2/lib64/libcusparseLt.so.0
@@ -82,8 +83,9 @@ NOTE: Check version compatibility version of Pytorch and Torchvision in [[https:
    sudo python3 setup.py build_ext --inplace
    sudo python3 setup.py install
 #+END_SRC
+
 2. Alphapose
-  ,#+BEGIN_SRC patch
+#+BEGIN_SRC patch
   diff --git a/setup.py b/setup.py
   index 25d14cd..acc981b 100644
   --- a/setup.py
