@@ -100,3 +100,10 @@ NOTE: Check version compatibility version of Pytorch and Torchvision in [[https:
        with open(version_file, 'w') as f:
            f.write(content.format(time.asctime(), VERSION, SHORT_VERSION))
 #+END_SRC
+
+* Test AlphaPose demo
+#+BEGIN_SRC bash
+  sudo python3 demo.py --indir examples/demo/ --outdir examples/res --save_img --sp --vis_fast
+#+END_SRC
+--sp: Single process
+--vis_fast: If this step takes too long, you can enable the --vis_fast flag to use fast rendering (real-time).
